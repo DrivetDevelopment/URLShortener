@@ -1,0 +1,9 @@
+web:
+  port: ''
+
+databases:
+  mysql:
+    host: ''
+    user: ''
+    password: ''
+    database: ''
