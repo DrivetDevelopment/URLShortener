@@ -1,6 +1,5 @@
 const express = require('express')
 const app = express()
-const port = 3000
 const config = require('config').util.toObject()
 const mysql = require('@drivet/database')
 const catloggr = require('cat-loggr')
@@ -53,6 +52,6 @@ app.get('*', async (req, res) => {
   }
 })
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`)
+app.listen(config.web.port, () => {
+  console.log(`Listening on port ${config.web.port}`)
 })
