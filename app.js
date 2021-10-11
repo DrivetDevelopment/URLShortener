@@ -29,7 +29,7 @@ app.post('/', shortenerLimiter, (req, res) => {
 
   mysql.rowQuery('INSERT INTO links SET ?', { url: req.body.url, shortcode })
 
-  return res.status(200).json({ shortcode, url: `http://localhost:3000/${shortcode}`, })
+  return res.status(200).json({ shortcode, url: `https://r.drivet.xyz/${shortcode}`, })
 })
 
 app.get('*', async (req, res) => {
