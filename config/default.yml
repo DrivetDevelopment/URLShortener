@@ -1,5 +1,6 @@
 web:
   port: ''
+  url: ''
 
 databases:
   mysql:

@@ -11,7 +11,10 @@
   "license": "ISC",
   "dependencies": {
     "@drivet/database": "^0.1.7",
+    "cat-loggr": "^1.2.2",
     "config": "^3.3.6",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "express-rate-limit": "^5.4.1",
+    "randomstring": "^1.2.1"
   }
 }
