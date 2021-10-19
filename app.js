@@ -8,6 +8,7 @@ const randomstring = require("randomstring")
 const rateLimit = require("express-rate-limit")
 
 app.use(express.json())
+app.set('trust proxy', true)
 
 const shortenerLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
@@ -29,7 +30,7 @@ app.post('/', shortenerLimiter, (req, res) => {
   const shortcode = randomstring.generate(6)
   const ip = req.headers['x-forwarded-for'] 
 
-  mysql.rowQuery('INSERT INTO links SET ?', { url: req.body.url, shortcode, ip })
+  mysql.rowQuery('INSERT INTO links SET ?', { url: req.body.url, shortcode, ip: req.ip })
 
   return res.status(200).json({ shortcode, url: `https://r.drivet.xyz/${shortcode}`, })
 })
