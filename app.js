@@ -28,9 +28,9 @@ app.post('/', shortenerLimiter, (req, res) => {
   if (!pattern.test(req.body.url)) return res.status(400).json({ error: true, code: 400, message: 'Please enter a valid url.' })
 
   const shortcode = randomstring.generate(6)
-  const ip = req.headers['x-forwarded-for'] 
+  const ip = req.headers['x-real-ip']
 
-  mysql.rowQuery('INSERT INTO links SET ?', { url: req.body.url, shortcode, ip: req.ip })
+  mysql.rowQuery('INSERT INTO links SET ?', { url: req.body.url, shortcode, ip })
 
   return res.status(200).json({ shortcode, url: `https://r.drivet.xyz/${shortcode}`, })
 })
