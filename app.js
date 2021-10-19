@@ -7,8 +7,8 @@ const console = new catloggr()
 const randomstring = require("randomstring")
 const rateLimit = require("express-rate-limit")
 
-app.use(express.json())
 app.set('trust proxy', true)
+app.use(express.json())
 
 const shortenerLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
@@ -28,9 +28,9 @@ app.post('/', shortenerLimiter, (req, res) => {
   if (!pattern.test(req.body.url)) return res.status(400).json({ error: true, code: 400, message: 'Please enter a valid url.' })
 
   const shortcode = randomstring.generate(6)
-  const ip = req.headers['x-real-ip']
+  const ip = req.headers['x-forwarded-for'] 
 
-  mysql.rowQuery('INSERT INTO links SET ?', { url: req.body.url, shortcode, ip })
+  mysql.rowQuery('INSERT INTO links SET ?', { url: req.body.url, shortcode, ip: req.ip })
 
   return res.status(200).json({ shortcode, url: `https://r.drivet.xyz/${shortcode}`, })
 })
