@@ -20,14 +20,16 @@ app.get('/', (req, res) => {
 })
 
 app.post('/', shortenerLimiter, (req, res) => {
-  const pattern = /^((http|https|ftp):\/\/)/;
+  //const pattern = /^((http|https|ftp):\/\/)/;
+  let pattern = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/gm;
 
   if (!req.body.url) return res.status(400).json({ error: true, code: 400, message: 'Missing "url" from the body' })
-  if (!pattern.test(req.body.url)) return res.status(400).json({ error: true, code: 400, message: 'Missing "http://" or "https://" from the url body' })
+  if (!pattern.test(req.body.url)) return res.status(400).json({ error: true, code: 400, message: 'Please enter a valid url.' })
 
   const shortcode = randomstring.generate(6)
+  const ip = req.headers['Fastly-Client-IP'] || req.headers['x-forwarded-for'] || req.socket.remoteAddress 
 
-  mysql.rowQuery('INSERT INTO links SET ?', { url: req.body.url, shortcode })
+  mysql.rowQuery('INSERT INTO links SET ?', { url: req.body.url, shortcode, ip })
 
   return res.status(200).json({ shortcode, url: `https://r.drivet.xyz/${shortcode}`, })
 })
