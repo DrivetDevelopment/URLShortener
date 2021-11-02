@@ -21,38 +21,37 @@ app.get('/', (req, res) => {
 })
 
 app.post('/', shortenerLimiter, (req, res) => {
-  //const pattern = /^((http|https|ftp):\/\/)/;
   let pattern = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/gm;
 
   if (!req.body.url) return res.status(400).json({ error: true, code: 400, message: 'Missing "url" from the body' })
   if (!pattern.test(req.body.url)) return res.status(400).json({ error: true, code: 400, message: 'Please enter a valid url.' })
 
   const shortcode = randomstring.generate(6)
-  const ip = req.headers['x-forwarded-for'] 
 
   mysql.rowQuery('INSERT INTO links SET ?', { url: req.body.url, shortcode, ip: req.ip })
 
   return res.status(200).json({ shortcode, url: `https://r.drivet.xyz/${shortcode}`, })
 })
 
-app.get('*', async (req, res) => {
-  const data = await mysql.rowQuery('SELECT * FROM links WHERE shortcode = ?', req.url.replace(/\//g, ''))
+app.get('/ping', async (req, res) => {
+  return res.status(200).json({ status: 'OK' })
+})
 
+app.get('/:shortcode', async (req, res) => {
+  const data = await mysql.rowQuery('SELECT url FROM links WHERE shortcode = ?', req.params.shortcode)
   if (req.url.replace(/\//g, '') === 'favicon.ico') return;
 
-  if (data && data.shortcode) {
-    console.info(`Successful Hit on "${data.shortcode}". Redirecting user`)
-
-    res.redirect(data.url)
-  } else {
-    console.info(`Unsuccessful hit on: "${req.url.replace(/\//g, '')}"`)
-
-    res.status(404).json({
+  if (!data) {
+    console.info(`[${req.ip}] Unsuccessful Hit on "${req.params.shortcode}"`)
+    return res.status(404).json({
       error: true,
       code: 404,
       message: 'The link does not exist or has been deleted from the server'
-    })
+    }) 
   }
+
+  console.info(`[${req.ip}] Successful Hit on "${req.params.shortcode}". Redirecting user`)
+  res.redirect(data.url)
 })
 
 app.listen(config.web.port, () => {
