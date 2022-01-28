@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const config = require('config').util.toObject()
-const mysql = require('@drivet/database')
+const mysql = require('./database')
 const catloggr = require('cat-loggr')
 const console = new catloggr()
 const randomstring = require("randomstring")
